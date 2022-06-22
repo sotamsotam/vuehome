@@ -14,13 +14,94 @@ let boardList = [
 	{no:8, subject:"테스트 제목8", content:"테스트 내용8", writer:"testid2", writedate:"2022-03-26 18:40:00"},
 	{no:9, subject:"테스트 제목9", content:"테스트 내용9", writer:"testid3", writedate:"2022-03-26 19:50:00"},
 	{no:10, subject:"테스트 제목10", content:"테스트 내용10", writer:"testid1", writedate:"2022-03-26 21:00:00"},
-	{no:11, subject:"테스트 제목11", content:"테스트 내용11", writer:"testid2", writedate:"2022-03-26 22:10:00"},
-	{no:12, subject:"테스트 제목12", content:"테스트 내용12", writer:"testid3", writedate:"2022-03-26 23:20:00"},
+	{no:11, subject:"테스트 제목11", content:"테스트 내용11", writer:"testid2", writedate:"2022-03-27 00:30:00"},
+	{no:12, subject:"테스트 제목12", content:"테스트 내용12", writer:"testid3", writedate:"2022-03-27 00:30:00"},
 	{no:13, subject:"테스트 제목13", content:"테스트 내용13", writer:"testid1", writedate:"2022-03-27 00:30:00"}
 	];
 
+// 정렬 해시맵(HashMap)
+var hashmapSortby = []; 
+
+// 작성자 오름차순 정렬
+hashmapSortby["writer.asc"] = function(comp1, comp2) {
+	var comp1UC = comp1.writer.toUpperCase();
+	var comp2UC = comp2.writer.toUpperCase();
+	if (comp1UC < comp2UC) {
+		return -1;
+	} else if (comp1UC > comp2UC) {
+		return 1;
+	}
+	return 0;
+};
+
+// 작성자 내림차순 정렬
+hashmapSortby["writer.desc"] = function(comp1, comp2) {
+	var comp1UC = comp1.writer.toUpperCase();
+	var comp2UC = comp2.writer.toUpperCase();
+	if (comp1UC < comp2UC) {
+		return 1;
+	} else if (comp1UC > comp2UC) {
+		return -1;
+	}
+	return 0;
+};
+
+// 작성날짜 오름차순 정렬
+hashmapSortby["writedate.asc"] = function(comp1, comp2) {
+	var comp1UC = new Date(comp1.writedate).getTime();
+	var comp2UC = new Date(comp2.writedate).getTime();
+	if (comp1UC < comp2UC) {
+		return -1;
+	} else if (comp1UC > comp2UC) {
+		return 1;
+	}
+	return 0;
+};
+	
+// 작성날짜 내림차순 정렬
+hashmapSortby["writedate.desc"] = function(comp1, comp2) {
+	var comp1UC = new Date(comp1.writedate).getTime();
+	var comp2UC = new Date(comp2.writedate).getTime();
+	if (comp1UC < comp2UC) {
+		return 1;
+	} else if (comp1UC > comp2UC) {
+		return -1;
+	}
+	return 0;
+};
+
+
 router.get('/', function(req, res, next) {
 	console.log("REST API Get Method - Read All");
+	
+	// 정렬
+	var sortby = req.query.sortby;
+	// 정렬 배열
+	var arSortby = null;
+	
+	if (sortby == undefined || typeof sortby == "undefined" || sortby == null) {
+		arSortby = [];
+	} else {
+		arSortby = sortby.split(",");
+	}
+	
+	if (arSortby.length > 0) {
+		boardList.sort(function(comp1, comp2) {
+			var result = 0;
+			for (var index = 0; index < arSortby.length; index++) {
+				if (hashmapSortby[arSortby[index]] != null) {
+					result = hashmapSortby[arSortby[index]](comp1, comp2);
+					if (result == 0) {
+						continue;
+					} else {
+						break;
+					}
+				}
+			}
+			return result;
+		});
+	}
+
 	// 페이지 크기
 	var countPerPage = req.query.countperpage;
 	// 페이지 번호
@@ -73,7 +154,7 @@ router.get('/', function(req, res, next) {
 		}
 		// 다음 페이지 번호 활성화 여부
 		var enableNextPageNo = true;
-		if ((pageNo + 1) > lastPageNo) {
+		if ((pageNo + 1) >= lastPageNo) {
 			enableNextPageNo = false;
 		}
 		// 이전 페이지 사이즈 번호
