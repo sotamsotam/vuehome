@@ -64,26 +64,28 @@
 			<span class="visually-hidden">Next</span>
 		</button>
 	</div>
-  <div class="py-5">
-    <div class="container text-start">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-        <div class="col" v-for="boardItem in boardList" v-bind:key="boardItem.no">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">{{boardItem.subject}}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">{{boardItem.writer}}</h6>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary" @click="boardNoClick(boardItem)">보기</button>
-                </div>
-                <small class="text-muted">{{boardItem.writedate}}</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+	<div class="py-5">
+	<div class="container text-start">
+		<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+			<div class="col my-2" v-for="boardItem in boardList" v-bind:key="boardItem.no">
+				<div class="card">
+					<img class="card-img-top" :src="(boardItem.poster.toUpperCase().startsWith('HTTP') ? '' : 'http://localhost:9000') + boardItem.poster" alt="">
+					<div class="card-body">
+						<h5 class="card-title">{{boardItem.subject}}</h5>
+						<h6 class="card-subtitle mb-2 text-muted">{{boardItem.writer}}</h6>
+						<p class="card-text">{{boardItem.content}}</p>
+						<div class="d-flex justify-content-between align-items-center">
+							<div class="btn-group">
+								<button type="button" class="btn btn-sm btn-outline-secondary" @click="boardNoClick(boardItem)">보기</button>
+							</div>
+							<small class="text-muted">{{boardItem.writedate}}</small>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
     </div>
-  </div>
 	<div class="home">
 		<img alt="Vue logo" src="../assets/logo.png">
 		<HelloWorld msg="Welcome to Your Vue.js App"/>
@@ -192,5 +194,30 @@ export default {
   line-height: 30px;
   color: #fff;
   cursor: pointer;
+}
+
+.card-img-top {
+  height: 15em;
+  object-fit: cover;
+}
+
+.card-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4em;
+  height: 2.8em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.card-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4em;
+  height: 4.2em;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 </style>
