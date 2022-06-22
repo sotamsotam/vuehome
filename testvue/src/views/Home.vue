@@ -100,6 +100,7 @@
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue';
 import * as bootstrap from 'bootstrap';
+import $ from 'jquery';
 
 export default {
 	name: 'Home',
@@ -112,38 +113,30 @@ export default {
 			boardPagination : {}
 		};
 	},
-	computed : {
-		pagingInfo() {
-			var pagingInfoText = "0 / 0";
-			if (this.boardPagination != undefined && this.boardPagination.pageNo != undefined && this.boardPagination.lastPageNo != undefined) {
-				pagingInfoText = this.boardPagination.pageNo + " / " + this.boardPagination.lastPageNo;
-			}
-			return pagingInfoText;
-		}
-	},
 	methods : {
 		mainTopCarouselPrevClick() {
-			var mainTopCarousel = document.querySelector('#mainTopCarousel');
+			var mainTopCarousel = $('#mainTopCarousel');
 			var carousel = bootstrap.Carousel.getInstance(mainTopCarousel);
 			carousel.prev();
 		},
 		mainTopCarouselNextClick() {
-			var mainTopCarousel = document.querySelector('#mainTopCarousel');
+			var mainTopCarousel = $('#mainTopCarousel');
 			var carousel = bootstrap.Carousel.getInstance(mainTopCarousel);
 			carousel.next();
 		},
 		mainTopCarouselPlayPauseClick(event) {
-			var mainTopCarousel = document.querySelector('#mainTopCarousel');
+			var target = $(event.target);
+			var mainTopCarousel = $('#mainTopCarousel');
 			var carousel = bootstrap.Carousel.getInstance(mainTopCarousel);
-			if (mainTopCarousel.classList.contains("pause")) {
-				mainTopCarousel.classList.remove("pause");
-				event.target.classList.remove("bi-play-fill");
-				event.target.classList.add("bi-pause-fill");
+			if (mainTopCarousel.hasClass("pause")) {
+				mainTopCarousel.removeClass("pause");
+				target.removeClass("bi-play-fill");
+				target.addClass("bi-pause-fill");
 				carousel.cycle();
 			} else {
-				mainTopCarousel.classList.add("pause");
-				event.target.classList.remove("bi-pause-fill");
-				event.target.classList.add("bi-play-fill");
+				mainTopCarousel.addClass("pause");
+				target.removeClass("bi-pause-fill");
+				target.addClass("bi-play-fill");
 				carousel.pause();
 			}
 		},
@@ -153,21 +146,28 @@ export default {
 				this.boardList = this.boardList.concat(res.data.data);
 				this.boardPagination = res.data.pagination;
 				if (!this.boardPagination.enableNextPageNo) {
-					var button = document.getElementById("boardMoreButton");
-					button.disabled = "disabled";
+					$("#boardMoreButton").attr("disabled", true);
 				}
 			}).catch((err) => {
 				console.log(err);
 			});
 		},
 		boardNoClick(boardItem) {
-		this.$router.push({name : 'BoardView', query : {boardNo : boardItem.no}});
+			this.$router.push({name : 'BoardView', query : {boardNo : boardItem.no}});
 		},
 		boardPaging() {
-			console.log(this.boardPagination);
 			if (this.boardPagination != undefined && this.boardPagination.enableNextPageNo) {
 				this.getBoardList(this.boardPagination.pageNo + 1);
 			}
+		}
+	},
+	computed : {
+		pagingInfo() {
+			var pagingInfoText = "0 / 0";
+			if (this.boardPagination != undefined && this.boardPagination.pageNo != undefined && this.boardPagination.lastPageNo != undefined) {
+				pagingInfoText = this.boardPagination.pageNo + " / " + this.boardPagination.lastPageNo;
+			}
+			return pagingInfoText;
 		}
 	},
 	mounted() {
