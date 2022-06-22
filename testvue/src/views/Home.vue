@@ -66,29 +66,26 @@
 	</div>
 	<div class="py-5">
 	<div class="container text-start">
-		<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-			<div class="col my-2" v-for="boardItem in boardList" v-bind:key="boardItem.no">
-				<div class="card">
-					<img class="card-img-top" :src="(boardItem.poster.toUpperCase().startsWith('HTTP') ? '' : 'http://localhost:9000') + boardItem.poster" alt="">
-					<div class="card-body">
-						<h5 class="card-title">{{boardItem.subject}}</h5>
-						<h6 class="card-subtitle mb-2 text-muted">{{boardItem.writer}}</h6>
-						<p class="card-text">{{boardItem.content}}</p>
-						<div class="d-flex justify-content-between align-items-center">
-							<div class="btn-group">
-								<button type="button" class="btn btn-sm btn-outline-secondary" @click="boardNoClick(boardItem)">보기</button>
-							</div>
-							<small class="text-muted">{{boardItem.writedate}}</small>
-						</div>
+		<div class="list-group">
+			<router-link :to="{name : 'BoardView', query : {boardNo : boardItem.no}}" class="list-group-item list-group-item-action" v-for="boardItem in boardList" v-bind:key="boardItem.no">
+				<div class="list-group-item-article">
+					<div class="list-group-item-writer mb-3">
+						<span>{{boardItem.writer}}</span>
+						<small>{{boardItem.writedate}}</small>
 					</div>
+					<h5 class="list-group-item-title mb-3">{{boardItem.subject}}</h5>
+					<p class="list-group-item-content">{{boardItem.content}}</p>
 				</div>
-			</div>
+				<div class="list-group-item-thumbnail">
+					<img :src="(boardItem.poster.toUpperCase().startsWith('HTTP') ? '' : 'http://localhost:9000') + boardItem.poster" alt="">
+				</div>
+			</router-link>
 		</div>
 		<div class="row my-2 mx-auto">
 			<button type="button" class="btn btn-sm btn-primary" id="boardMoreButton" @click="boardPaging()">더 보기 ({{pagingInfo}})</button>
 		</div>
 	</div>
-	</div>
+    </div>
 	<div class="home">
 		<img alt="Vue logo" src="../assets/logo.png">
 		<HelloWorld msg="Welcome to Your Vue.js App"/>
@@ -220,28 +217,58 @@ export default {
   cursor: pointer;
 }
 
-.card-img-top {
-  height: 15em;
+.list-group-item {
+  display: flex !important;
+  justify-content: space-between;
+}
+
+.list-group-item-article {
+  position: relative;
+  width: 100%;
+}
+
+.list-group-item-thumbnail {
+  position: relative;
+  width: 180px;
+  height: 140px;
+  margin-left: 40px;
+}
+
+.list-group-item-thumbnail > img {
+  position: relative;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.card-title {
+.list-group-item-writer > span {
+  display: block;
+  font-size: 14px;
+}
+
+.list-group-item-writer > small {
+  display: block;
+  font-size: 11px;
+}
+
+.list-group-item-title {
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.4em;
-  height: 2.8em;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.card-text {
+.list-group-item-content {
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.4em;
-  height: 4.2em;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  font-size: 13px;
 }
 </style>
