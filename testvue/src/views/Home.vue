@@ -84,8 +84,11 @@
 				</div>
 			</div>
 		</div>
+		<div class="row my-2 mx-auto">
+			<button type="button" class="btn btn-sm btn-primary" id="boardMoreButton" @click="boardPaging()">더 보기 ({{pagingInfo}})</button>
+		</div>
 	</div>
-    </div>
+	</div>
 	<div class="home">
 		<img alt="Vue logo" src="../assets/logo.png">
 		<HelloWorld msg="Welcome to Your Vue.js App"/>
@@ -105,8 +108,18 @@ export default {
 	},
 	data : function() {
 		return {
-			boardList : []
+			boardList : [],
+			boardPagination : {}
 		};
+	},
+	computed : {
+		pagingInfo() {
+			var pagingInfoText = "0 / 0";
+			if (this.boardPagination != undefined && this.boardPagination.pageNo != undefined && this.boardPagination.lastPageNo != undefined) {
+				pagingInfoText = this.boardPagination.pageNo + " / " + this.boardPagination.lastPageNo;
+			}
+			return pagingInfoText;
+		}
 	},
 	methods : {
 		mainTopCarouselPrevClick() {
@@ -134,20 +147,31 @@ export default {
 				carousel.pause();
 			}
 		},
-		getBoardList() {
-			this.axios.get("http://localhost:9000/boards").then((res)=>{
-				console.log(res);
-				this.boardList = res.data.data;
+		getBoardList(pageNo) {
+			this.axios.get("http://localhost:9000/boards?countperpage=3&pageno=" + pageNo + "&sortby=writedate.desc").then((res)=>{
+				//console.log(res);
+				this.boardList = this.boardList.concat(res.data.data);
+				this.boardPagination = res.data.pagination;
+				if (!this.boardPagination.enableNextPageNo) {
+					var button = document.getElementById("boardMoreButton");
+					button.disabled = "disabled";
+				}
 			}).catch((err) => {
 				console.log(err);
 			});
 		},
-    boardNoClick(boardItem) {
-      this.$router.push({name : 'BoardView', query : {boardNo : boardItem.no}});
-    }
+		boardNoClick(boardItem) {
+		this.$router.push({name : 'BoardView', query : {boardNo : boardItem.no}});
+		},
+		boardPaging() {
+			console.log(this.boardPagination);
+			if (this.boardPagination != undefined && this.boardPagination.enableNextPageNo) {
+				this.getBoardList(this.boardPagination.pageNo + 1);
+			}
+		}
 	},
 	mounted() {
-		this.getBoardList();
+		this.getBoardList(1);
 	}
 };
 </script>
